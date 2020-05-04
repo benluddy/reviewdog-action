@@ -1,0 +1,20 @@
+name: reviewdog
+description:
+inputs:
+  github_token:
+    description: API token used by reviewdog to interact with the Github API.
+    required: true
+  reviewable_label:
+    description: PRs without this label will be ignored.
+    required: true
+  event_path:
+    description: The path to the full event webhook payload on the runner.
+    required: true
+runs:
+  using: docker
+  image: Dockerfile
+  env:
+    GITHUB_TOKEN: ${{ inputs.github_token }}
+    REVIEWABLE_LABEL: ${{ inputs.reviewable_label }}
+    EVENT_PATH: ${{ inputs.event_path }}
+  entrypoint: action

@@ -1,0 +1,8 @@
+#!/bin/sh -e
+
+for number in $(hub pr list -f '%I %L' | awk 'NF > 1 && match($2, /(,|^)documentation(,|$)/) && !match($2, /(,|^)enhancement(,|$)/) { print $1 }'); do
+    jq -n $(hub pr show -f "--argjson number %I --arg sha %sH --arg ref %H" "$number") --arg repository "$GITHUB_REPOSITORY" -f /pr-event.json > "pr-event-$number.json"
+    hub pr checkout "$number"
+    hub issue update "$number" -l enhancement
+    golangci-lint run --out-format=line-number --new-from-rev="$(hub pr show -f '%sB' "$number")" | REVIEWDOG_GITHUB_API_TOKEN="$GITHUB_TOKEN" GITHUB_EVENT_PATH="$(pwd)/pr-event-$number.json" reviewdog -f golangci-lint -reporter github-pr-review
+done

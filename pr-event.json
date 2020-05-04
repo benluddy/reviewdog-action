@@ -1,0 +1,15 @@
+{
+    "repository": {
+	"name": ($repository | split("/"))[1],
+	"owner": {
+	    "login": ($repository | split("/"))[0]
+	}
+    },
+    "pull_request": {
+	"number": $number,
+	"head": {
+	    "sha": $sha,
+	    "ref": $ref,
+	}
+    }
+}
